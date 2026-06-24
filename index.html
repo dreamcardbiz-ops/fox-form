@@ -220,6 +220,11 @@ header{background:var(--white);border-bottom:1px solid var(--border);padding:0 4
           <span class="err-msg">שדה חובה</span>
         </div>
         <div class="field">
+          <label>מספר לקוח פוקס <span class="req">★</span></label>
+          <input type="text" id="foxClientNum" placeholder="מספר לקוח" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field">
           <label>סוג אתר <span class="req">★</span></label>
           <select id="siteType">
             <option value="">בחר...</option>
@@ -425,7 +430,8 @@ const rules = [
     { id:'openDate',    ok: v => v },
     { id:'closeDate',   ok: v => v },
     { id:'supplyDate',  ok: v => v },
-    { id:'defaultGift', ok: v => v.trim() },
+    { id:'defaultGift',   ok: v => v.trim() },
+    { id:'foxClientNum',  ok: v => v.trim() },
   ],
   [
     { id:'cName',       ok: v => v.trim() },
@@ -483,6 +489,7 @@ function buildSummary() {
     { l:'Site_Name',                  v: g('siteName'),      wide: false },
     { l:'סוג אתר',                   v: g('siteType'),      wide: false },
     // שורה 2
+    { l:'מספר לקוח פוקס',         v: g('foxClientNum'),  wide: false },
     { l:'תאריך פתיחת אתר',           v: g('openDate'),      wide: false },
     { l:'תאריך סגירת אתר',           v: g('closeDate'),     wide: false },
     // שורה 3
@@ -531,7 +538,7 @@ function collect() {
     "כרטיס ברכה":                    g('greetCard'),
     "הערות אירוז ושילוח":            g('packNotes'),
     "סוג אתר":                       g('siteType'),
-    "מספר לקוח פוקס":                '',
+    "מספר לקוח פוקס":                g('foxClientNum'),
     "מספר ללקוח ללין":               g('llinNum'),
     "מספר לקוח פוקס רכישות":         '',
     "תאריך פתיחת אתר":              g('openDate'),
