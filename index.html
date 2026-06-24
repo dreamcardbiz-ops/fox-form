@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אישור אתר בחירה — קבוצת פוקס</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F0F0F'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia%2C serif' font-size='19' font-weight='700' fill='%23C9A84C'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:       #B8963E;
+  --gold-mid:   #C9A84C;
+  --gold-light: #E2C97E;
+  --gold-pale:  #F8F2E3;
+  --gold-rule:  rgba(184,150,62,0.22);
+  --black:      #0F0F0F;
+  --ink:        #1C1C1C;
+  --ink-mid:    #555;
+  --ink-light:  #888;
+  --ink-ghost:  #BBB;
+  --bg:         #F9F8F6;
+  --bg-off:     #F2F1EE;
+  --white:      #FFFFFF;
+  --border:     #E4E2DC;
+  --border-d:   #CCC9C0;
+  --error:      #C0392B;
+  --r:          12px;
+  --r-sm:       8px;
+  --r-pill:     999px;
+  --shadow-lg:  0 8px 32px rgba(15,15,15,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+body::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--black) 0%,var(--gold-mid) 50%,var(--black) 100%);}
+
+/* HEADER */
+header{background:var(--white);border-bottom:1px solid var(--border);padding:0 40px;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 6px rgba(15,15,15,0.06);}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{width:42px;height:42px;background:var(--black);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold-mid);}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink);}
+.logo-sub{font-size:13px;color:var(--ink-ghost);letter-spacing:0.8px;}
+.header-pill{font-size:14px;font-weight:500;letter-spacing:1px;color:var(--ink-light);background:var(--bg-off);border:1px solid var(--border);padding:5px 14px;border-radius:var(--r-pill);}
+
+/* HERO */
+.hero{text-align:center;padding:48px 24px 36px;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:20px;height:1px;background:var(--gold-rule);}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(36px,4vw,64px);font-weight:400;line-height:1.15;color:var(--ink);margin-bottom:10px;}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero-desc{font-size:18px;color:var(--ink-light);font-weight:300;max-width:400px;margin:0 auto 32px;line-height:1.7;}
+
+/* STEPS */
+.steps{display:flex;align-items:center;justify-content:center;max-width:480px;margin:0 auto;}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:16px;left:calc(50% + 16px);right:calc(-50% + 16px);height:1px;background:var(--border);transition:background .3s;}
+.step.done:not(:last-child)::after{background:var(--gold-mid);}
+.step-dot{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--ink-ghost);position:relative;z-index:1;transition:all .25s;}
+.step.active .step-dot{background:var(--black);border-color:var(--black);color:var(--gold-mid);}
+.step.done   .step-dot{background:var(--gold-pale);border-color:var(--gold-mid);color:var(--gold);}
+.step-lbl{font-size:13px;color:var(--ink-ghost);margin-top:6px;white-space:nowrap;}
+.step.active .step-lbl{color:var(--ink);font-weight:600;}
+.step.done   .step-lbl{color:var(--gold);}
+
+/* CARD */
+.form-wrap{max-width:1100px;margin:20px auto 80px;padding:0 20px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);overflow:hidden;}
+.card-top{height:4px;background:linear-gradient(90deg,transparent,var(--gold-mid) 40%,var(--gold-light) 60%,transparent);}
+
+/* PANELS */
+.panel{display:none;animation:pIn .25s ease;}
+.panel.active{display:block;}
+@keyframes pIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.panel-head{padding:36px 52px 26px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border);}
+.p-icon{width:54px;height:54px;flex-shrink:0;background:var(--gold-pale);border:1px solid var(--gold-rule);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.p-title{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--ink);}
+.p-sub{font-size:16px;color:var(--ink-light);margin-top:2px;}
+
+/* FIELDS */
+.fields{padding:36px 52px;display:grid;grid-template-columns:1fr 1fr;gap:26px 40px;}
+.fields.one{grid-template-columns:1fr;}
+.full{grid-column:span 2;}
+
+.field{display:flex;flex-direction:column;gap:7px;}
+.field label{font-size:14px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-mid);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.req{color:var(--gold);font-size:14px;line-height:1;}
+.opt{font-size:12px;font-weight:500;color:var(--ink-ghost);background:var(--bg-off);border:1px solid var(--border);border-radius:20px;padding:1px 7px;white-space:nowrap;}
+
+.field input,.field select,.field textarea{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);
+  padding:14px 18px;font-size:17px;font-family:'Heebo',sans-serif;color:var(--ink);
+  width:100%;text-align:right;direction:rtl;-webkit-appearance:none;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--ink-ghost);font-size:16px;}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:var(--border-d);background:var(--white);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);background:var(--white);box-shadow:0 0 0 3px rgba(184,150,62,.10);}
+.field input.err,.field select.err{border-color:var(--error);}
+.field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23BBB'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 13px center;padding-left:34px;}
+.field textarea{min-height:80px;resize:vertical;line-height:1.6;}
+.err-msg{font-size:14px;color:var(--error);display:none;}
+.field.has-err .err-msg{display:block;}
+
+/* CHIPS */
+.chip-group{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{padding:11px 22px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--bg);font-family:'Heebo',sans-serif;font-size:16px;font-weight:500;color:var(--ink-mid);cursor:pointer;transition:all .18s;user-select:none;}
+.chip:hover{border-color:var(--gold-mid);color:var(--ink);}
+.chip.sel{background:var(--black);border-color:var(--black);color:var(--gold-mid);font-weight:600;}
+
+/* SECTION LABEL */
+.sec-lbl{grid-column:span 2;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;padding-top:4px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--gold-rule);}
+
+/* SUMMARY GRID */
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;grid-column:span 2;}
+.sum-cell{background:var(--white);padding:16px 20px;transition:background .15s;}
+.sum-cell:hover{background:var(--gold-pale);}
+.sum-cell.wide{grid-column:span 2;}
+.s-lbl{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-ghost);margin-bottom:3px;}
+.s-val{font-size:17px;color:var(--ink);font-weight:500;}
+.s-val.mt{color:var(--ink-ghost);font-style:italic;font-size:12px;font-weight:400;}
+
+/* NAV */
+.nav{padding:24px 52px 32px;border-top:1px solid var(--border);background:var(--bg-off);display:flex;align-items:center;justify-content:space-between;border-radius:0 0 var(--r) var(--r);}
+.nav-meta{font-size:15px;color:var(--ink-ghost);}
+.nav-meta strong{color:var(--ink-mid);}
+
+/* BUTTONS */
+.btn{font-family:'Heebo',sans-serif;font-size:17px;font-weight:600;padding:14px 32px;border:none;cursor:pointer;border-radius:var(--r-pill);transition:all .18s;display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:var(--black);color:var(--gold-mid);border:1.5px solid var(--black);}
+.btn-primary:hover{background:var(--gold);color:var(--black);border-color:var(--gold);box-shadow:0 4px 16px rgba(184,150,62,.28);}
+.btn-ghost{background:transparent;color:var(--ink-light);border:1.5px solid var(--border-d);}
+.btn-ghost:hover{border-color:var(--ink-mid);color:var(--ink);}
+.btn-submit{background:var(--black);color:var(--gold-mid);border:1.5px solid var(--black);font-size:19px;padding:16px 40px;}
+.btn-submit:hover{background:var(--gold);color:var(--black);border-color:var(--gold);box-shadow:0 6px 20px rgba(184,150,62,.3);transform:translateY(-1px);}
+.btn-submit:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* SUCCESS */
+.success{display:none;padding:60px 40px;text-align:center;}
+.success.show{display:block;}
+.check-wrap{width:68px;height:68px;border-radius:50%;background:var(--gold-pale);border:2px solid var(--gold-mid);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 24px;animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.success h2{font-family:'DM Serif Display',serif;font-size:36px;font-weight:400;color:var(--ink);margin-bottom:8px;}
+.success p{color:var(--ink-light);font-size:18px;line-height:1.7;}
+.receipt{margin:24px auto 0;max-width:580px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:18px 24px;text-align:right;font-size:13px;line-height:2.1;color:var(--ink-mid);}
+.receipt strong{color:var(--ink);}
+
+/* LOADER */
+.loader{display:none;position:fixed;inset:0;background:rgba(249,248,246,.88);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(4px);}
+.loader.show{display:flex;}
+.spin{width:42px;height:42px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:rot .75s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.loader p{font-size:13px;color:var(--ink-light);}
+
+/* WEBHOOK NOTICE */
+.notice-wrap{max-width:1100px;margin:0 auto 16px;padding:0 20px;}
+.notice{background:var(--gold-pale);border:1px solid rgba(184,150,62,0.3);border-radius:var(--r-sm);padding:12px 16px;font-size:12.5px;color:var(--ink-mid);line-height:1.65;}
+.notice strong{color:var(--gold);}
+.notice code{background:rgba(184,150,62,0.15);padding:1px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:11.5px;}
+
+@media(max-width:580px){
+  header{padding:0 20px;}
+  .panel-head,.fields,.nav{padding-left:20px;padding-right:20px;}
+  .fields{grid-template-columns:1fr;}
+  .full,.sec-lbl,.sum-grid{grid-column:span 1;}
+  .sum-grid{grid-template-columns:1fr;}
+  .sum-cell.wide{grid-column:span 1;}
+  .step-lbl{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="spin"></div><p>שולח נתונים...</p></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">F</div>
+    <div>
+      <div class="logo-name">Fox Group</div>
+      <div class="logo-sub">Business Division</div>
+    </div>
+  </div>
+  <div class="header-pill">מערכת פנימית</div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">חטיבה עסקית · אתרי בחירה</div>
+  <h1>אישור <em>אתר בחירה</em></h1>
+  <p class="hero-desc">מלאו את הפרטים ושלחו — הנתונים ייכנסו ישירות לדאטה בייס.</p>
+  <div class="steps" id="stepsEl">
+    <div class="step active"><div class="step-dot">1</div><div class="step-lbl">פרטי האתר</div></div>
+    <div class="step">      <div class="step-dot">2</div><div class="step-lbl">לקוח ואספקה</div></div>
+    <div class="step">      <div class="step-dot">3</div><div class="step-lbl">סיכום ושליחה</div></div>
+  </div>
+</div>
+
+
+
+<div class="form-wrap">
+  <div class="card">
+    <div class="card-top"></div>
+
+    <!-- ══════ PANEL 1 ══════ -->
+    <div class="panel active" id="p0">
+      <div class="panel-head">
+        <div class="p-icon">🌐</div>
+        <div>
+          <div class="p-title">פרטי האתר</div>
+          <div class="p-sub">שדות המסומנים ★ הם חובה</div>
+        </div>
+      </div>
+      <div class="fields">
+
+        <div class="field">
+          <label>שם האתר <span class="req">★</span></label>
+          <input type="text" id="siteName" placeholder='למשל: פסח 2026 – רמי לוי' />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field">
+          <label>סוג אתר <span class="req">★</span></label>
+          <select id="siteType">
+            <option value="">בחר...</option>
+            <option>פסח</option>
+            <option>ראש השנה</option>
+            <option>יום הולדת</option>
+            <option>אחר</option>
+          </select>
+          <span class="err-msg">שדה חובה</span>
+        </div>
+
+        <div class="sec-lbl">תאריכים</div>
+
+        <div class="field">
+          <label>תאריך פתיחת אתר <span class="req">★</span></label>
+          <input type="date" id="openDate" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field">
+          <label>תאריך סגירת אתר <span class="req">★</span></label>
+          <input type="date" id="closeDate" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field">
+          <label>תאריך אספקה <span class="req">★</span></label>
+          <input type="date" id="supplyDate" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field">
+          <label>תאריך דוח מאושר ע"י לקוח <span class="opt">אופציונלי</span></label>
+          <input type="date" id="reportDate" />
+        </div>
+
+        <div class="sec-lbl">אספקה ומתנת ברירת מחדל</div>
+
+        <!-- אופן אספקה של האתר -->
+        <div class="field full">
+          <label>אופן אספקה של האתר <span class="req">★</span></label>
+          <div style="font-size:12px;color:var(--ink-light);margin-bottom:8px;">מה יוצג לעובדים לבחירה?</div>
+          <div class="chip-group" id="shipChips">
+            <div class="chip" data-val="דיגיטלי בלבד">דיגיטלי בלבד</div>
+            <div class="chip" data-val="פיזי בלבד">פיזי בלבד</div>
+            <div class="chip" data-val="בחירה — פיזי או דיגיטלי">בחירה — פיזי או דיגיטלי</div>
+          </div>
+          <input type="hidden" id="shipMethod" />
+          <span class="err-msg" id="shipErr" style="display:none">נא לבחור אופן אספקה</span>
+        </div>
+
+        <div class="field full">
+          <label>שם מתנת ברירת המחדל <span class="req">★</span></label>
+          <input type="text" id="defaultGift" placeholder="שם המתנה שתוצג לעובדים שלא בחרו" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+
+        <!-- שיטת שילוח של ברירת מחדל -->
+        <div class="field full">
+          <label>שיטת שילוח של ברירת המחדל <span class="req">★</span></label>
+          <div style="font-size:12px;color:var(--ink-light);margin-bottom:8px;">עובד שלא בחר — המתנה תישלח איך?</div>
+          <div class="chip-group" id="defShipChips">
+            <div class="chip" data-val="דיגיטלי">דיגיטלי</div>
+            <div class="chip" data-val="פיזי">פיזי</div>
+          </div>
+          <input type="hidden" id="defShipMethod" />
+          <span class="err-msg" id="defShipErr" style="display:none">נא לבחור</span>
+        </div>
+
+        <div class="field">
+          <label>לינק לאתר <span class="opt">אופציונלי</span></label>
+          <input type="url" id="siteUrl" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>מספר לקוח ללין <span class="opt">אופציונלי</span></label>
+          <input type="text" id="llinNum" placeholder="אם רלוונטי" />
+        </div>
+
+      </div>
+      <div class="nav">
+        <span></span>
+        <div class="nav-meta">שלב <strong>1</strong> / 3</div>
+        <button class="btn btn-primary" onclick="next(0)">המשך ←</button>
+      </div>
+    </div>
+
+    <!-- ══════ PANEL 2 ══════ -->
+    <div class="panel" id="p1">
+      <div class="panel-head">
+        <div class="p-icon">👤</div>
+        <div>
+          <div class="p-title">לקוח ואספקה</div>
+          <div class="p-sub">פרטי איש קשר ושילוח</div>
+        </div>
+      </div>
+      <div class="fields">
+
+        <div class="field">
+          <label>שם איש קשר <span class="req">★</span></label>
+          <input type="text" id="cName" placeholder="שם מלא" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field">
+          <label>טלפון איש קשר <span class="req">★</span></label>
+          <input type="tel" id="cPhone" placeholder="05X-XXXXXXX" />
+          <span class="err-msg">שדה חובה</span>
+        </div>
+        <div class="field full">
+          <label>מייל איש קשר <span class="req">★</span></label>
+          <input type="email" id="cEmail" placeholder="name@company.co.il" />
+          <span class="err-msg">כתובת מייל לא תקינה</span>
+        </div>
+        <div class="field">
+          <label>תנאי תשלום <span class="opt">אופציונלי</span></label>
+          <select id="payTerms">
+            <option value="">בחר...</option>
+            <option>שוטף+30</option><option>שוטף+60</option><option>מראש</option><option>אחר</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>כרטיס ברכה <span class="opt">אופציונלי</span></label>
+          <select id="greetCard">
+            <option value="">בחר...</option><option>כן</option><option>לא</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>הערות לתנאי תשלום <span class="opt">אופציונלי</span></label>
+          <input type="text" id="payNotes" placeholder="אם יש..." />
+        </div>
+
+        <div class="field full">
+          <label>הערות אירוז ושילוח <span class="opt">אופציונלי</span></label>
+          <textarea id="packNotes" placeholder="כתובת אספקה, הנחיות מיוחדות לאריזה ושילוח..."></textarea>
+        </div>
+
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev(1)">→ חזור</button>
+        <div class="nav-meta">שלב <strong>2</strong> / 3</div>
+        <button class="btn btn-primary" onclick="next(1)">לסיכום ←</button>
+      </div>
+    </div>
+
+    <!-- ══════ PANEL 3 — סיכום ══════ -->
+    <div class="panel" id="p2">
+      <div class="panel-head">
+        <div class="p-icon">✅</div>
+        <div>
+          <div class="p-title">סיכום ואישור</div>
+          <div class="p-sub">בדקו ולחצו שלח</div>
+        </div>
+      </div>
+      <div class="fields one">
+        <div class="sum-grid" id="sumGrid"></div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev(2)">→ חזור לעריכה</button>
+        <div class="nav-meta">שלב <strong>3</strong> / 3</div>
+        <button class="btn btn-submit" id="subBtn" onclick="doSubmit()">📤 שלח לדאטה בייס</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="successEl">
+      <div class="check-wrap">✓</div>
+      <h2>האישור נשלח!</h2>
+      <p>הנתונים התקבלו ויעודכנו במערכת.</p>
+      <div class="receipt" id="receipt"></div>
+      <button class="btn btn-primary" style="margin-top:28px;" onclick="location.reload()">+ שלח אתר נוסף</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// ⚙️  הדבק כאן את ה-Webhook URL מ-Power Automate
+// ══════════════════════════════════════════════
+const WEBHOOK = 'https://script.google.com/macros/s/AKfycbxFQXE0_DrirlNxah8KbbqrYeoUBKJC7QFLBQ7ezciADZJ3rwPdeIgnVAPsw089fOro3g/exec';
+// ══════════════════════════════════════════════
+
+let curStep = 0;
+
+/* ── Chips ── */
+function initChips(groupId, hiddenId, errId) {
+  document.querySelectorAll(`#${groupId} .chip`).forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll(`#${groupId} .chip`).forEach(c => c.classList.remove('sel'));
+      chip.classList.add('sel');
+      document.getElementById(hiddenId).value = chip.dataset.val;
+      if (errId) document.getElementById(errId).style.display = 'none';
+    });
+  });
+}
+initChips('shipChips',    'shipMethod',   'shipErr');
+initChips('defShipChips', 'defShipMethod','defShipErr');
+
+/* ── Helpers ── */
+const g = id => (document.getElementById(id) || {}).value || '';
+
+/* ── Validation ── */
+const rules = [
+  [
+    { id:'siteName',    ok: v => v.trim() },
+    { id:'siteType',    ok: v => v },
+    { id:'openDate',    ok: v => v },
+    { id:'closeDate',   ok: v => v },
+    { id:'supplyDate',  ok: v => v },
+    { id:'defaultGift', ok: v => v.trim() },
+  ],
+  [
+    { id:'cName',       ok: v => v.trim() },
+    { id:'cPhone',      ok: v => v.trim() },
+    { id:'cEmail',      ok: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+
+  ],
+];
+
+function validate(s) {
+  let ok = true;
+  (rules[s] || []).forEach(r => {
+    const el = document.getElementById(r.id);
+    if (!el) return;
+    const f = el.closest('.field');
+    if (r.ok(el.value)) { f.classList.remove('has-err'); el.classList.remove('err'); }
+    else { f.classList.add('has-err'); el.classList.add('err'); ok = false; }
+  });
+  if (s === 0) {
+    [['shipErr','shipMethod'],['defShipErr','defShipMethod']].forEach(([errId, valId]) => {
+      const errEl = document.getElementById(errId);
+      if (!g(valId)) { errEl.style.display = 'block'; ok = false; }
+      else errEl.style.display = 'none';
+    });
+  }
+  return ok;
+}
+
+/* ── Navigation ── */
+function next(from) {
+  if (!validate(from)) {
+    setTimeout(() => document.querySelector('.has-err, [style*="block"]')
+      ?.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
+    return;
+  }
+  curStep = from + 1;
+  if (curStep === 2) buildSummary();
+  show(curStep);
+}
+function prev(from) { curStep = from - 1; show(curStep); }
+function show(s) {
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===s));
+  document.querySelectorAll('.step').forEach((el,i) => {
+    el.classList.remove('active','done');
+    if (i < s) el.classList.add('done');
+    if (i === s) el.classList.add('active');
+  });
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ── Summary ── */
+function buildSummary() {
+  const items = [
+    // שורה 1
+    { l:'Site_Name',                  v: g('siteName'),      wide: false },
+    { l:'סוג אתר',                   v: g('siteType'),      wide: false },
+    // שורה 2
+    { l:'תאריך פתיחת אתר',           v: g('openDate'),      wide: false },
+    { l:'תאריך סגירת אתר',           v: g('closeDate'),     wide: false },
+    // שורה 3
+    { l:'תאריך אספקה (Delivery_Date)',v: g('supplyDate'),    wide: false },
+    { l:'תאריך דוח מאושר',           v: g('reportDate')||'—', wide: false },
+    // שורה 4 — spans
+    { l:'אופן אספקה',                v: g('shipMethod'),    wide: false },
+    { l:'שיטת שילוח ברירת מחדל',    v: g('defShipMethod'), wide: false },
+    // שורה 5
+    { l:'מתנת ברירת מחדל',           v: g('defaultGift'),   wide: true  },
+    // שורה 6
+    { l:'שם איש קשר',                v: g('cName'),         wide: false },
+    { l:'טלפון',                     v: g('cPhone'),        wide: false },
+    // שורה 7
+    { l:'מייל',                      v: g('cEmail'),        wide: true  },
+    // שורה 8
+    { l:'תנאי תשלום',                v: g('payTerms')||'—', wide: false },
+    { l:'כרטיס ברכה',                v: g('greetCard')||'—',wide: false },
+    // שורה 9
+    { l:'מספר לקוח ללין',            v: g('llinNum')||'—',  wide: false },
+    { l:'לינק לאתר',                 v: g('siteUrl')||'—',  wide: false },
+    // שורה 10
+    { l:'הערות אירוז ושילוח',        v: g('packNotes')||'—',wide: true  },
+  ];
+  document.getElementById('sumGrid').innerHTML = items.map(({l,v,wide}) => `
+    <div class="sum-cell${wide?' wide':''}">
+      <div class="s-lbl">${l}</div>
+      <div class="s-val ${v && v !== '—' ? '' : 'mt'}">${v || 'לא הוזן'}</div>
+    </div>`).join('');
+}
+
+/* ── Collect — column names match Without_Sub_Chain exactly ── */
+function collect() {
+  return {
+    "Site_Name":                      g('siteName'),
+    "Delivery_Date":                  g('supplyDate'),
+    "AS400_Order_Number":             '',
+    "Proof":                          '',
+    "שם איש קשר":                    g('cName'),
+    "טלפון איש קשר":                 g('cPhone'),
+    "מייל איש קשר":                  g('cEmail'),
+    "תנאי תשלום":                    g('payTerms'),
+    "הערות לתנאי תשלום":             g('payNotes'),
+    "אופן אספקה":                    g('shipMethod'),
+    "כתובת אספקה":                   '',
+    "כרטיס ברכה":                    g('greetCard'),
+    "הערות אירוז ושילוח":            g('packNotes'),
+    "סוג אתר":                       g('siteType'),
+    "מספר לקוח פוקס":                '',
+    "מספר ללקוח ללין":               g('llinNum'),
+    "מספר לקוח פוקס רכישות":         '',
+    "תאריך פתיחת אתר":              g('openDate'),
+    "תאריך סגירת אתר":              g('closeDate'),
+    'תאריך דוח מאושר עי"י לקוח':    g('reportDate'),
+    "תאריך אספקה":                   g('supplyDate'),
+    "מתנת ברירת מחדל":              g('defaultGift'),
+    "שיטת שילוח ברירת מחדל":        g('defShipMethod'),
+    "לינק לאתר":                     g('siteUrl'),
+    "תאריך שליחה":                   new Date().toLocaleString('he-IL'),
+    "submittedAt":                    new Date().toISOString(),
+  };
+}
+
+/* ── Submit ── */
+async function doSubmit() {
+  const btn = document.getElementById('subBtn');
+  btn.disabled = true;
+  document.getElementById('loader').classList.add('show');
+  const data = collect();
+
+  try {
+    await fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(data),
+      mode: 'no-cors'
+    });
+  } catch(e) {
+    document.getElementById('loader').classList.remove('show');
+    alert('שגיאה בשליחה — נסה שנית.');
+    btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('loader').classList.remove('show');
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  document.getElementById('successEl').classList.add('show');
+
+  const ts = new Date(data.submittedAt).toLocaleString('he-IL');
+  document.getElementById('receipt').innerHTML =
+    `<strong>אתר:</strong> ${data.Site_Name}<br>` +
+    `<strong>סוג:</strong> ${data['סוג אתר']}<br>` +
+    `<strong>פתיחה:</strong> ${data['תאריך פתיחת אתר']} &nbsp;|&nbsp; <strong>סגירה:</strong> ${data['תאריך סגירת אתר']}<br>` +
+    `<strong>אספקה:</strong> ${data.Delivery_Date}<br>` +
+    `<strong>אופן אספקה:</strong> ${data['אופן אספקה']}<br>` +
+    `<strong>מתנת מחדל:</strong> ${data['מתנת ברירת מחדל']} (${data['שיטת שילוח ברירת מחדל']})<br>` +
+    `<strong>איש קשר:</strong> ${data['שם איש קשר']} · ${data['טלפון איש קשר']}<br>` +
+    `<strong>תאריך שליחה:</strong> ${ts}`;
+
+  document.querySelectorAll('.step').forEach(el => {
+    el.classList.remove('active');
+    el.classList.add('done');
+  });
+}
+</script>
+</body>
+</html>
